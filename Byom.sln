@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36511.14 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{34401AD9-82D7-401B-BC78-36C1EE8262F1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{06C39A36-74F9-4E44-9AB4-FACE5265696D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3EF09E3C-AA2C-4470-98F3-9564A195F260}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Byom.Abstractions", "Byom.Abstractions\Byom.Abstractions.csproj", "{3AC11DC8-CE75-2A2A-C982-87B66850E63E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Byom.Core", "Byom.Core\Byom.Core.csproj", "{AEDA67E3-0719-C9A7-840C-535CDDB1D0F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Byom.Tests", "Byom.Tests\Byom.Tests.csproj", "{43DF04C0-4C46-19A6-508E-4CE116BA72DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Byom.WPF", "Byom.WPF\Byom.WPF.csproj", "{D37CF4C5-6224-BCE3-3FF1-AAA922A3EBCC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3AC11DC8-CE75-2A2A-C982-87B66850E63E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AC11DC8-CE75-2A2A-C982-87B66850E63E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AC11DC8-CE75-2A2A-C982-87B66850E63E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AC11DC8-CE75-2A2A-C982-87B66850E63E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEDA67E3-0719-C9A7-840C-535CDDB1D0F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEDA67E3-0719-C9A7-840C-535CDDB1D0F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEDA67E3-0719-C9A7-840C-535CDDB1D0F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEDA67E3-0719-C9A7-840C-535CDDB1D0F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43DF04C0-4C46-19A6-508E-4CE116BA72DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43DF04C0-4C46-19A6-508E-4CE116BA72DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43DF04C0-4C46-19A6-508E-4CE116BA72DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43DF04C0-4C46-19A6-508E-4CE116BA72DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D37CF4C5-6224-BCE3-3FF1-AAA922A3EBCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D37CF4C5-6224-BCE3-3FF1-AAA922A3EBCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D37CF4C5-6224-BCE3-3FF1-AAA922A3EBCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D37CF4C5-6224-BCE3-3FF1-AAA922A3EBCC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3EF09E3C-AA2C-4470-98F3-9564A195F260} = {06C39A36-74F9-4E44-9AB4-FACE5265696D}
+		{3AC11DC8-CE75-2A2A-C982-87B66850E63E} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{AEDA67E3-0719-C9A7-840C-535CDDB1D0F8} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{43DF04C0-4C46-19A6-508E-4CE116BA72DD} = {34401AD9-82D7-401B-BC78-36C1EE8262F1}
+		{D37CF4C5-6224-BCE3-3FF1-AAA922A3EBCC} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {587B88E8-C2D8-4C6E-92C8-9DDA470F30B3}
+	EndGlobalSection
+EndGlobal
