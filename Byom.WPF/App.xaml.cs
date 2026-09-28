@@ -46,7 +46,6 @@ public partial class App : Application
         // --- Services (инфраструктура UI) ---
         services.AddSingleton<IFileDialogService, WpfFileDialogService>();
         services.AddSingleton<IByomHelpService, HelpService>();
-        services.AddSingleton<ILogger>(Log.Logger);
 
         // --- Domain services ---
         services.AddSingleton<ITransactionParser, TBankCsvParser>();

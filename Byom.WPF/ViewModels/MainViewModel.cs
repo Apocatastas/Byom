@@ -5,6 +5,7 @@ using Byom.Abstractions.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace Byom.WPF.ViewModels;
 
@@ -13,7 +14,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ITransactionParser _parser;
     private readonly IFileDialogService _fileDialog;
     private readonly IByomHelpService _help;
-    private readonly ILogger _logger;
+    private readonly ILogger<MainViewModel> _logger;
 
     private CancellationTokenSource? _cts;
 
@@ -34,7 +35,7 @@ public partial class MainViewModel : ObservableObject
         ITransactionParser parser,
         IFileDialogService fileDialog,
         IByomHelpService help,
-        ILogger logger)
+        ILogger<MainViewModel> logger)
     {
         _parser = parser;
         _fileDialog = fileDialog;
@@ -54,7 +55,7 @@ public partial class MainViewModel : ObservableObject
         }
 
         SelectedFilePath = path;
-        _logger.Information("Выбран файл: {Path}", path);
+        _logger.LogInformation("Выбран файл: {Path}", path);
     }
 
     [RelayCommand(CanExecute = nameof(CanLoad))]
@@ -71,7 +72,7 @@ public partial class MainViewModel : ObservableObject
         Transactions.Clear();
 
         var sw = Stopwatch.StartNew();
-        _logger.Information("Начало загрузки: {Path}", SelectedFilePath);
+        _logger.LogInformation("Начало загрузки: {Path}", SelectedFilePath);
 
         try
         {
@@ -87,19 +88,19 @@ public partial class MainViewModel : ObservableObject
                             $"пропущено: {result.SkippedRows}, " +
                             $"за {sw.ElapsedMilliseconds} мс";
 
-            _logger.Information(
+            _logger.LogInformation(
                 "Загрузка завершена. Всего: {Total}, загружено: {Parsed}, пропущено: {Skipped}, {Ms} мс",
                 result.TotalRows, result.ParsedRows, result.SkippedRows, sw.ElapsedMilliseconds);
         }
         catch (OperationCanceledException)
         {
             StatusMessage = "Загрузка отменена";
-            _logger.Information("Загрузка отменена пользователем");
+            _logger.LogInformation("Загрузка отменена пользователем");
         }
         catch (Exception ex)
         {
             StatusMessage = $"Ошибка: {ex.Message}";
-            _logger.Error(ex, "Ошибка при загрузке файла");
+            _logger.LogError(ex, "Ошибка при загрузке файла");
         }
         finally
         {
