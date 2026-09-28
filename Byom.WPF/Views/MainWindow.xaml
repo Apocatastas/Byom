@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         Title="BYOM"
         Height="600" Width="1000"
@@ -65,15 +66,9 @@
   <Grid Margin="12">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
-      <!-- toolbar -->
       <RowDefinition Height="Auto" />
-      <!-- KPI -->
-      <RowDefinition Height="Auto" />
-      <!-- progress -->
       <RowDefinition Height="*" />
-      <!-- data grid -->
       <RowDefinition Height="Auto" />
-      <!-- status bar -->
     </Grid.RowDefinitions>
 
     <!-- ============ Toolbar ============ -->
@@ -86,159 +81,190 @@
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
 
-      <Button Grid.Column="0"
-                    Content="Выбрать файл"
+      <Button Grid.Column="0" Content="Выбрать файл"
                     Command="{Binding PickFileCommand}"
-                    Padding="12,6"
-                    MinWidth="120" />
+                    Padding="12,6" MinWidth="120" />
 
       <TextBlock Grid.Column="1"
                        Text="{Binding SelectedFilePath, TargetNullValue='Файл не выбран'}"
-                       VerticalAlignment="Center"
-                       Margin="12,0"
+                       VerticalAlignment="Center" Margin="12,0"
                        TextTrimming="CharacterEllipsis"
                        ToolTip="{Binding SelectedFilePath}" />
 
-      <Button Grid.Column="2"
-                    Content="Загрузить"
+      <Button Grid.Column="2" Content="Загрузить"
                     Command="{Binding LoadCommand}"
-                    Padding="12,6"
-                    MinWidth="120"
-                    Margin="0,0,8,0" />
+                    Padding="12,6" MinWidth="120" Margin="0,0,8,0" />
 
-      <Button Grid.Column="3"
-            Content="Отмена"
-            Command="{Binding CancelCommand}"
-            Padding="12,6" MinWidth="100" Margin="0,0,8,0" />
+      <Button Grid.Column="3" Content="Отмена"
+                    Command="{Binding CancelCommand}"
+                    Padding="12,6" MinWidth="100" Margin="0,0,8,0" />
 
-      <Button Grid.Column="4"
-                    Content="?"
+      <Button Grid.Column="4" Content="?"
                     Command="{Binding ShowHelpCommand}"
                     Width="32" Height="32"
                     ToolTip="Справка (F1)" />
     </Grid>
-    <!-- ============ KPI cards ============ -->
-    <UniformGrid Grid.Row="1"
-             Rows="1"
-             Margin="0,0,0,8"
-             Visibility="{Binding Summary.HasData, Converter={StaticResource BoolToVisibilityConverter}}">
 
-      <!-- Расход -->
-      <Border Style="{StaticResource KpiCardStyle}" Margin="0,0,4,0">
-        <StackPanel>
-          <TextBlock Text="РАСХОД" Style="{StaticResource KpiCaptionStyle}" />
-          <TextBlock Text="{Binding Summary.TotalExpense, StringFormat={}{0:N2} ₽}"
-                       Style="{StaticResource KpiValueExpenseStyle}" />
-          <TextBlock Text="{Binding Summary.ExpenseCount, StringFormat=операций: {0}}"
-                       Style="{StaticResource KpiHintStyle}" />
-        </StackPanel>
-      </Border>
-
-      <!-- Доход -->
-      <Border Style="{StaticResource KpiCardStyle}" Margin="4,0">
-        <StackPanel>
-          <TextBlock Text="ДОХОД" Style="{StaticResource KpiCaptionStyle}" />
-          <TextBlock Text="{Binding Summary.TotalIncome, StringFormat={}{0:N2} ₽}"
-                       Style="{StaticResource KpiValueIncomeStyle}" />
-          <TextBlock Text="{Binding Summary.IncomeCount, StringFormat=операций: {0}}"
-                       Style="{StaticResource KpiHintStyle}" />
-        </StackPanel>
-      </Border>
-
-      <!-- Баланс -->
-      <Border Style="{StaticResource KpiCardStyle}" Margin="4,0">
-        <StackPanel>
-          <TextBlock Text="БАЛАНС" Style="{StaticResource KpiCaptionStyle}" />
-          <TextBlock Text="{Binding Summary.Net, StringFormat={}{0:N2} ₽}"
-                       Foreground="{Binding Summary.Net, Converter={StaticResource AmountToBrushConverter}}"
-                       Style="{StaticResource KpiValueBaseStyle}" />
-          <TextBlock Text="доход − расход" Style="{StaticResource KpiHintStyle}" />
-        </StackPanel>
-      </Border>
-
-      <!-- Средний чек -->
-      <Border Style="{StaticResource KpiCardStyle}" Margin="4,0">
-        <StackPanel>
-          <TextBlock Text="СРЕДНИЙ ЧЕК" Style="{StaticResource KpiCaptionStyle}" />
-          <TextBlock Text="{Binding Summary.AverageExpense, StringFormat={}{0:N2} ₽}"
-                       Style="{StaticResource KpiValueBaseStyle}" />
-          <TextBlock Text="по расходам" Style="{StaticResource KpiHintStyle}" />
-        </StackPanel>
-      </Border>
-
-      <!-- Топ-категория -->
-      <Border Style="{StaticResource KpiCardStyle}" Margin="4,0,0,0">
-        <StackPanel>
-          <TextBlock Text="ТОП-КАТЕГОРИЯ" Style="{StaticResource KpiCaptionStyle}" />
-          <TextBlock Text="{Binding Summary.TopCategory.Category, TargetNullValue='—'}"
-                       Style="{StaticResource KpiValueBaseStyle}"
-                       TextTrimming="CharacterEllipsis" />
-          <TextBlock Text="{Binding Summary.TopCategory.Total, StringFormat={}{0:N2} ₽, TargetNullValue=''}"
-                       Style="{StaticResource KpiHintStyle}" />
-        </StackPanel>
-      </Border>
-    </UniformGrid>
     <!-- ============ Progress ============ -->
-    <ProgressBar Grid.Row="2"
+    <ProgressBar Grid.Row="1"
                      Height="4"
                      Margin="0,0,0,8"
                      IsIndeterminate="True"
                      Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-    <!-- ============ DataGrid ============ -->
-    <DataGrid Grid.Row="3"
-                  ItemsSource="{Binding Transactions}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  HeadersVisibility="Column"
-                  GridLinesVisibility="Horizontal"
-                  EnableRowVirtualization="True"
-                  EnableColumnVirtualization="True"
-                  SelectionMode="Extended"
-                  SelectionUnit="FullRow">
+    <!-- ============ Tabs ============ -->
+    <TabControl Grid.Row="2"
+                    Visibility="{Binding Summary.HasData, Converter={StaticResource BoolToVisibilityConverter}}">
 
-      <DataGrid.Columns>
-        <DataGridTextColumn Header="Дата"
-                                    Binding="{Binding Date, StringFormat=dd.MM.yyyy}"
-                                    Width="110" />
+      <!-- === TAB 1: Операции === -->
+      <TabItem Header="Операции">
+        <Grid Margin="8">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
 
-        <DataGridTextColumn Header="Время"
-                                    Binding="{Binding Time, StringFormat=HH\\:mm}"
-                                    Width="70" />
+          <UniformGrid Grid.Row="0" Rows="1" Margin="0,0,0,12">
+            <Border Style="{StaticResource KpiCardStyle}" Margin="0,0,4,0">
+              <StackPanel>
+                <TextBlock Text="РАСХОД" Style="{StaticResource KpiCaptionStyle}" />
+                <TextBlock Text="{Binding Summary.TotalExpense, StringFormat={}{0:N2} ₽}"
+                                           Style="{StaticResource KpiValueExpenseStyle}" />
+                <TextBlock Text="{Binding Summary.ExpenseCount, StringFormat=операций: {0}}"
+                                           Style="{StaticResource KpiHintStyle}" />
+              </StackPanel>
+            </Border>
 
-        <DataGridTextColumn Header="Сумма"
-                                    Binding="{Binding Amount, StringFormat=N2}"
-                                    Width="120">
-          <DataGridTextColumn.ElementStyle>
-            <Style TargetType="TextBlock">
-              <Setter Property="HorizontalAlignment" Value="Right" />
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding Amount}" Value="0">
-                  <Setter Property="Foreground" Value="Gray" />
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </DataGridTextColumn.ElementStyle>
-        </DataGridTextColumn>
+            <Border Style="{StaticResource KpiCardStyle}" Margin="4,0">
+              <StackPanel>
+                <TextBlock Text="ДОХОД" Style="{StaticResource KpiCaptionStyle}" />
+                <TextBlock Text="{Binding Summary.TotalIncome, StringFormat={}{0:N2} ₽}"
+                                           Style="{StaticResource KpiValueIncomeStyle}" />
+                <TextBlock Text="{Binding Summary.IncomeCount, StringFormat=операций: {0}}"
+                                           Style="{StaticResource KpiHintStyle}" />
+              </StackPanel>
+            </Border>
 
-        <DataGridTextColumn Header="Категория"
-                                    Binding="{Binding Category}"
-                                    Width="160" />
+            <Border Style="{StaticResource KpiCardStyle}" Margin="4,0">
+              <StackPanel>
+                <TextBlock Text="БАЛАНС" Style="{StaticResource KpiCaptionStyle}" />
+                <TextBlock Text="{Binding Summary.Net, StringFormat={}{0:N2} ₽}"
+                                           Foreground="{Binding Summary.Net, Converter={StaticResource AmountToBrushConverter}}"
+                                           Style="{StaticResource KpiValueBaseStyle}" />
+                <TextBlock Text="доход − расход" Style="{StaticResource KpiHintStyle}" />
+              </StackPanel>
+            </Border>
 
-        <DataGridTextColumn Header="Контрагент"
-                                    Binding="{Binding Description}"
-                                    Width="2*" />
+            <Border Style="{StaticResource KpiCardStyle}" Margin="4,0">
+              <StackPanel>
+                <TextBlock Text="СРЕДНИЙ ЧЕК" Style="{StaticResource KpiCaptionStyle}" />
+                <TextBlock Text="{Binding Summary.AverageExpense, StringFormat={}{0:N2} ₽}"
+                                           Style="{StaticResource KpiValueBaseStyle}" />
+                <TextBlock Text="по расходам" Style="{StaticResource KpiHintStyle}" />
+              </StackPanel>
+            </Border>
 
-        <DataGridTextColumn Header="Описание"
-                                    Binding="{Binding Description}"
-                                    Width="3*" />
-      </DataGrid.Columns>
-    </DataGrid>
+            <Border Style="{StaticResource KpiCardStyle}" Margin="4,0,0,0">
+              <StackPanel>
+                <TextBlock Text="ТОП-КАТЕГОРИЯ" Style="{StaticResource KpiCaptionStyle}" />
+                <TextBlock Text="{Binding Summary.TopCategory.Category, TargetNullValue='—'}"
+                                           Style="{StaticResource KpiValueBaseStyle}"
+                                           TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding Summary.TopCategory.Total, StringFormat={}{0:N2} ₽, TargetNullValue=''}"
+                                           Style="{StaticResource KpiHintStyle}" />
+              </StackPanel>
+            </Border>
+          </UniformGrid>
+
+          <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding Transactions}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              EnableRowVirtualization="True"
+                              EnableColumnVirtualization="True"
+                              SelectionMode="Extended"
+                              SelectionUnit="FullRow">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=dd.MM.yyyy}" Width="110" />
+              <DataGridTextColumn Header="Время" Binding="{Binding Time, StringFormat=HH\\:mm}" Width="70" />
+              <DataGridTextColumn Header="Сумма"
+                                                Binding="{Binding Amount, StringFormat=N2}"
+                                                Width="120">
+                <DataGridTextColumn.ElementStyle>
+                  <Style TargetType="TextBlock">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="Foreground"
+                                                Value="{Binding Amount, Converter={StaticResource AmountToBrushConverter}}" />
+                  </Style>
+                </DataGridTextColumn.ElementStyle>
+              </DataGridTextColumn>
+              <DataGridTextColumn Header="Категория" Binding="{Binding BankCategory}" Width="160" />
+              <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="3*" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+      </TabItem>
+
+      <!-- === TAB 2: Категории === -->
+      <TabItem Header="Категории">
+        <Grid Margin="8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+
+          <lvc:PieChart Grid.Column="0"
+                                  Series="{Binding CategorySeries}"
+                                  LegendPosition="Right"
+                                  LegendTextSize="13"
+                                  TooltipPosition="Top" />
+
+          <DataGrid Grid.Column="1"
+                              ItemsSource="{Binding Summary.Categories}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              Margin="12,0,0,0">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Категория" Binding="{Binding Category}" Width="*" />
+              <DataGridTextColumn Header="Сумма"
+                                                Binding="{Binding Total, StringFormat=N2}"
+                                                Width="120">
+                <DataGridTextColumn.ElementStyle>
+                  <Style TargetType="TextBlock">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                  </Style>
+                </DataGridTextColumn.ElementStyle>
+              </DataGridTextColumn>
+              <DataGridTextColumn Header="Доля"
+                                                Binding="{Binding SharePercent, StringFormat={}{0:F1}%}"
+                                                Width="70" />
+              <DataGridTextColumn Header="Кол-во" Binding="{Binding Count}" Width="60" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+      </TabItem>
+
+      <!-- === TAB 3: Динамика === -->
+      <TabItem Header="Динамика">
+        <Grid Margin="8">
+          <TextBlock Text="График по месяцам появится в следующей итерации."
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="#95A5A6" />
+        </Grid>
+      </TabItem>
+
+    </TabControl>
 
     <!-- ============ Status bar ============ -->
-    <Border Grid.Row="4"
+    <Border Grid.Row="3"
                 Margin="0,8,0,0"
                 Padding="8,4"
                 Background="#F0F0F0"

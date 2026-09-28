@@ -7,6 +7,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 
 namespace Byom.WPF.ViewModels;
 
@@ -33,6 +37,12 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private PeriodSummary _summary = PeriodSummary.Empty;
+
+    [ObservableProperty]
+    private ISeries[] _categorySeries = Array.Empty<ISeries>();
+
+    [ObservableProperty]
+    private string _topCategorySummaryText = "";
 
     public ObservableCollection<Transaction> Transactions { get; } = new();
 
@@ -76,6 +86,7 @@ public partial class MainViewModel : ObservableObject
         IsBusy = true;
         StatusMessage = "Загрузка...";
         Summary = PeriodSummary.Empty;
+        CategorySeries = Array.Empty<ISeries>();
         Transactions.Clear();
 
         var sw = Stopwatch.StartNew();
@@ -91,6 +102,7 @@ public partial class MainViewModel : ObservableObject
             }
 
             Summary = _summaryCalculator.Calculate(result.Transactions);
+            UpdateCategorySeries(Summary.Categories);
 
             sw.Stop();
             StatusMessage = $"Загружено: {result.ParsedRows} из {result.TotalRows}, " +
@@ -138,5 +150,49 @@ public partial class MainViewModel : ObservableObject
     partial void OnSelectedFilePathChanged(string? value)
     {
         LoadCommand.NotifyCanExecuteChanged();
+    }
+
+    private const int TopCategoriesCount = 10;
+
+    private void UpdateCategorySeries(IReadOnlyList<CategorySummary> categories)
+    {
+        if (categories.Count == 0)
+        {
+            CategorySeries = Array.Empty<ISeries>();
+            return;
+        }
+
+        var top = categories.Take(TopCategoriesCount).ToList();
+        var othersTotal = categories.Skip(TopCategoriesCount).Sum(c => c.Total);
+
+        var series = new List<ISeries>();
+
+        foreach (var cat in top)
+        {
+            series.Add(BuildPieSlice(cat.Category, cat.Total));
+        }
+
+        if (othersTotal > 0)
+        {
+            series.Add(BuildPieSlice($"Прочее ({categories.Count - TopCategoriesCount})", othersTotal));
+        }
+
+        CategorySeries = series.ToArray();
+    }
+
+    private static PieSeries<decimal> BuildPieSlice(string name, decimal value)
+    {
+        return new PieSeries<decimal>
+        {
+            Name = name,
+            Values = new[] { value },
+            DataLabelsPaint = new SolidColorPaint(SKColors.White),
+            DataLabelsSize = 12,
+            DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Middle,
+            DataLabelsFormatter = point => $"{point.Model:N0} ₽",
+            ToolTipLabelFormatter = point =>
+                $"{point.Coordinate.PrimaryValue:N2} ₽",
+            Pushout = 0,
+        };
     }
 }

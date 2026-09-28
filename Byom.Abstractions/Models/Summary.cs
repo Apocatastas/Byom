@@ -18,8 +18,21 @@ public sealed record MonthlySummary(
     decimal Net)
 {
     /// <summary>Человекочитаемое имя месяца: "Сентябрь 2026".</summary>
-    public string DisplayName => new DateOnly(Year, Month, 1)
-        .ToString("MMMM yyyy", new System.Globalization.CultureInfo("ru-RU"));
+    public string DisplayName
+    {
+        get
+        {
+            var raw = new DateOnly(Year, Month, 1)
+                .ToString("MMMM yyyy", new System.Globalization.CultureInfo("ru-RU"));
+
+            if (string.IsNullOrEmpty(raw))
+            {
+                return raw;
+            }
+
+            return char.ToUpper(raw[0], new System.Globalization.CultureInfo("ru-RU")) + raw[1..];
+        }
+    }
 }
 
 public sealed record PeriodSummary(
