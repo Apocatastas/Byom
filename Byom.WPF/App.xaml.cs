@@ -1,5 +1,6 @@
 using System.Windows;
 using Byom.Abstractions.Interfaces;
+using Byom.Core.Analytics;
 using Byom.Core.Parsing;
 using Byom.WPF.Services;
 using Byom.WPF.ViewModels;
@@ -46,6 +47,7 @@ public partial class App : Application
         // --- Services (инфраструктура UI) ---
         services.AddSingleton<IFileDialogService, WpfFileDialogService>();
         services.AddSingleton<IByomHelpService, HelpService>();
+        services.AddSingleton<ISummaryCalculator, SummaryCalculator>();
 
         // --- Domain services ---
         services.AddSingleton<ITransactionParser, TBankCsvParser>();

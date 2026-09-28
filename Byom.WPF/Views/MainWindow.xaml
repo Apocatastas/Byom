@@ -12,6 +12,50 @@
 
   <Window.Resources>
     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    <converters:AmountToBrushConverter x:Key="AmountToBrushConverter" />
+
+      <!-- KPI styles -->
+      <Style x:Key="KpiCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="BorderBrush" Value="#E0E0E0" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="MinWidth" Value="140" />
+      </Style>
+
+      <Style x:Key="KpiCaptionStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="#7F8C8D" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+      </Style>
+
+      <Style x:Key="KpiValueBaseStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="#2C3E50" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+      </Style>
+
+      <Style x:Key="KpiValueExpenseStyle"
+               TargetType="TextBlock"
+               BasedOn="{StaticResource KpiValueBaseStyle}">
+        <Setter Property="Foreground" Value="#C0392B" />
+      </Style>
+
+      <Style x:Key="KpiValueIncomeStyle"
+               TargetType="TextBlock"
+               BasedOn="{StaticResource KpiValueBaseStyle}">
+        <Setter Property="Foreground" Value="#27AE60" />
+      </Style>
+
+      <Style x:Key="KpiHintStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="#95A5A6" />
+        <Setter Property="Margin" Value="0,2,0,0" />
+      </Style>
+
   </Window.Resources>
 
   <Window.InputBindings>
@@ -22,6 +66,8 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <!-- toolbar -->
+      <RowDefinition Height="Auto" />
+      <!-- KPI -->
       <RowDefinition Height="Auto" />
       <!-- progress -->
       <RowDefinition Height="*" />
@@ -71,16 +117,76 @@
                     Width="32" Height="32"
                     ToolTip="Справка (F1)" />
     </Grid>
+    <!-- ============ KPI cards ============ -->
+    <UniformGrid Grid.Row="1"
+             Rows="1"
+             Margin="0,0,0,8"
+             Visibility="{Binding Summary.HasData, Converter={StaticResource BoolToVisibilityConverter}}">
 
+      <!-- Расход -->
+      <Border Style="{StaticResource KpiCardStyle}" Margin="0,0,4,0">
+        <StackPanel>
+          <TextBlock Text="РАСХОД" Style="{StaticResource KpiCaptionStyle}" />
+          <TextBlock Text="{Binding Summary.TotalExpense, StringFormat={}{0:N2} ₽}"
+                       Style="{StaticResource KpiValueExpenseStyle}" />
+          <TextBlock Text="{Binding Summary.ExpenseCount, StringFormat=операций: {0}}"
+                       Style="{StaticResource KpiHintStyle}" />
+        </StackPanel>
+      </Border>
+
+      <!-- Доход -->
+      <Border Style="{StaticResource KpiCardStyle}" Margin="4,0">
+        <StackPanel>
+          <TextBlock Text="ДОХОД" Style="{StaticResource KpiCaptionStyle}" />
+          <TextBlock Text="{Binding Summary.TotalIncome, StringFormat={}{0:N2} ₽}"
+                       Style="{StaticResource KpiValueIncomeStyle}" />
+          <TextBlock Text="{Binding Summary.IncomeCount, StringFormat=операций: {0}}"
+                       Style="{StaticResource KpiHintStyle}" />
+        </StackPanel>
+      </Border>
+
+      <!-- Баланс -->
+      <Border Style="{StaticResource KpiCardStyle}" Margin="4,0">
+        <StackPanel>
+          <TextBlock Text="БАЛАНС" Style="{StaticResource KpiCaptionStyle}" />
+          <TextBlock Text="{Binding Summary.Net, StringFormat={}{0:N2} ₽}"
+                       Foreground="{Binding Summary.Net, Converter={StaticResource AmountToBrushConverter}}"
+                       Style="{StaticResource KpiValueBaseStyle}" />
+          <TextBlock Text="доход − расход" Style="{StaticResource KpiHintStyle}" />
+        </StackPanel>
+      </Border>
+
+      <!-- Средний чек -->
+      <Border Style="{StaticResource KpiCardStyle}" Margin="4,0">
+        <StackPanel>
+          <TextBlock Text="СРЕДНИЙ ЧЕК" Style="{StaticResource KpiCaptionStyle}" />
+          <TextBlock Text="{Binding Summary.AverageExpense, StringFormat={}{0:N2} ₽}"
+                       Style="{StaticResource KpiValueBaseStyle}" />
+          <TextBlock Text="по расходам" Style="{StaticResource KpiHintStyle}" />
+        </StackPanel>
+      </Border>
+
+      <!-- Топ-категория -->
+      <Border Style="{StaticResource KpiCardStyle}" Margin="4,0,0,0">
+        <StackPanel>
+          <TextBlock Text="ТОП-КАТЕГОРИЯ" Style="{StaticResource KpiCaptionStyle}" />
+          <TextBlock Text="{Binding Summary.TopCategory.Category, TargetNullValue='—'}"
+                       Style="{StaticResource KpiValueBaseStyle}"
+                       TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="{Binding Summary.TopCategory.Total, StringFormat={}{0:N2} ₽, TargetNullValue=''}"
+                       Style="{StaticResource KpiHintStyle}" />
+        </StackPanel>
+      </Border>
+    </UniformGrid>
     <!-- ============ Progress ============ -->
-    <ProgressBar Grid.Row="1"
+    <ProgressBar Grid.Row="2"
                      Height="4"
                      Margin="0,0,0,8"
                      IsIndeterminate="True"
                      Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
 
     <!-- ============ DataGrid ============ -->
-    <DataGrid Grid.Row="2"
+    <DataGrid Grid.Row="3"
                   ItemsSource="{Binding Transactions}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
@@ -132,7 +238,7 @@
     </DataGrid>
 
     <!-- ============ Status bar ============ -->
-    <Border Grid.Row="3"
+    <Border Grid.Row="4"
                 Margin="0,8,0,0"
                 Padding="8,4"
                 Background="#F0F0F0"

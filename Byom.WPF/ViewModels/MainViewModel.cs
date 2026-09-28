@@ -2,10 +2,11 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Byom.Abstractions.Interfaces;
 using Byom.Abstractions.Models;
+using Byom.Core.Analytics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Serilog;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Byom.WPF.ViewModels;
 
@@ -15,6 +16,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IFileDialogService _fileDialog;
     private readonly IByomHelpService _help;
     private readonly ILogger<MainViewModel> _logger;
+    private readonly ISummaryCalculator _summaryCalculator;
 
     private CancellationTokenSource? _cts;
 
@@ -29,19 +31,23 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string? _statusMessage;
 
+    [ObservableProperty]
+    private PeriodSummary _summary = PeriodSummary.Empty;
+
     public ObservableCollection<Transaction> Transactions { get; } = new();
 
     public MainViewModel(
         ITransactionParser parser,
         IFileDialogService fileDialog,
         IByomHelpService help,
+         ISummaryCalculator summaryCalculator,
         ILogger<MainViewModel> logger)
     {
         _parser = parser;
         _fileDialog = fileDialog;
         _help = help;
         _logger = logger;
-
+        _summaryCalculator = summaryCalculator;
         StatusMessage = "Готов к работе";
     }
 
@@ -69,6 +75,7 @@ public partial class MainViewModel : ObservableObject
         _cts = new CancellationTokenSource();
         IsBusy = true;
         StatusMessage = "Загрузка...";
+        Summary = PeriodSummary.Empty;
         Transactions.Clear();
 
         var sw = Stopwatch.StartNew();
@@ -82,6 +89,8 @@ public partial class MainViewModel : ObservableObject
             {
                 Transactions.Add(tx);
             }
+
+            Summary = _summaryCalculator.Calculate(result.Transactions);
 
             sw.Stop();
             StatusMessage = $"Загружено: {result.ParsedRows} из {result.TotalRows}, " +
