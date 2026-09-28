@@ -1,0 +1,133 @@
+<Window x:Class="Byom.WPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="BYOM"
+        Height="600" Width="1000"
+        MinHeight="400" MinWidth="700"
+        WindowStartupLocation="CenterScreen">
+
+  <Window.InputBindings>
+    <KeyBinding Key="F1" Command="{Binding ShowHelpCommand}" />
+  </Window.InputBindings>
+
+  <Grid Margin="12">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <!-- toolbar -->
+      <RowDefinition Height="Auto" />
+      <!-- progress -->
+      <RowDefinition Height="*" />
+      <!-- data grid -->
+      <RowDefinition Height="Auto" />
+      <!-- status bar -->
+    </Grid.RowDefinitions>
+
+    <!-- ============ Toolbar ============ -->
+    <Grid Grid.Row="0" Margin="0,0,0,8">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <Button Grid.Column="0"
+                    Content="Выбрать файл"
+                    Command="{Binding PickFileCommand}"
+                    Padding="12,6"
+                    MinWidth="120" />
+
+      <TextBlock Grid.Column="1"
+                       Text="{Binding SelectedFilePath, TargetNullValue='Файл не выбран'}"
+                       VerticalAlignment="Center"
+                       Margin="12,0"
+                       TextTrimming="CharacterEllipsis"
+                       ToolTip="{Binding SelectedFilePath}" />
+
+      <Button Grid.Column="2"
+                    Content="Загрузить"
+                    Command="{Binding LoadCommand}"
+                    Padding="12,6"
+                    MinWidth="120"
+                    Margin="0,0,8,0" />
+
+      <Button Grid.Column="3"
+                    Content="?"
+                    Command="{Binding ShowHelpCommand}"
+                    Width="32" Height="32"
+                    ToolTip="Справка (F1)" />
+    </Grid>
+
+    <!-- ============ Progress ============ -->
+    <ProgressBar Grid.Row="1"
+                     Height="4"
+                     Margin="0,0,0,8"
+                     IsIndeterminate="True"
+                     Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+    <!-- ============ DataGrid ============ -->
+    <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Transactions}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal"
+                  EnableRowVirtualization="True"
+                  EnableColumnVirtualization="True"
+                  SelectionMode="Extended"
+                  SelectionUnit="FullRow">
+
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Дата"
+                                    Binding="{Binding Date, StringFormat=dd.MM.yyyy}"
+                                    Width="110" />
+
+        <DataGridTextColumn Header="Время"
+                                    Binding="{Binding Time, StringFormat=HH\\:mm}"
+                                    Width="70" />
+
+        <DataGridTextColumn Header="Сумма"
+                                    Binding="{Binding Amount, StringFormat=N2}"
+                                    Width="120">
+          <DataGridTextColumn.ElementStyle>
+            <Style TargetType="TextBlock">
+              <Setter Property="HorizontalAlignment" Value="Right" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding Amount}" Value="0">
+                  <Setter Property="Foreground" Value="Gray" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </DataGridTextColumn.ElementStyle>
+        </DataGridTextColumn>
+
+        <DataGridTextColumn Header="Категория"
+                                    Binding="{Binding Category}"
+                                    Width="160" />
+
+        <DataGridTextColumn Header="Контрагент"
+                                    Binding="{Binding Description}"
+                                    Width="2*" />
+
+        <DataGridTextColumn Header="Описание"
+                                    Binding="{Binding Description}"
+                                    Width="3*" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+    <!-- ============ Status bar ============ -->
+    <Border Grid.Row="3"
+                Margin="0,8,0,0"
+                Padding="8,4"
+                Background="#F0F0F0"
+                CornerRadius="3">
+      <TextBlock Text="{Binding StatusMessage, TargetNullValue='Готов'}"
+                       TextTrimming="CharacterEllipsis" />
+    </Border>
+  </Grid>
+</Window>

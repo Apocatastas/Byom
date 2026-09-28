@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36511.14 d17.14
+VisualStudioVersion = 17.14.36511.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
 EndProject
@@ -14,10 +14,24 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Byom.Abstractions", "Byom.Abstractions\Byom.Abstractions.csproj", "{3AC11DC8-CE75-2A2A-C982-87B66850E63E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Byom.Core", "Byom.Core\Byom.Core.csproj", "{AEDA67E3-0719-C9A7-840C-535CDDB1D0F8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3AC11DC8-CE75-2A2A-C982-87B66850E63E} = {3AC11DC8-CE75-2A2A-C982-87B66850E63E}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Byom.Tests", "Byom.Tests\Byom.Tests.csproj", "{43DF04C0-4C46-19A6-508E-4CE116BA72DD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3AC11DC8-CE75-2A2A-C982-87B66850E63E} = {3AC11DC8-CE75-2A2A-C982-87B66850E63E}
+		{AEDA67E3-0719-C9A7-840C-535CDDB1D0F8} = {AEDA67E3-0719-C9A7-840C-535CDDB1D0F8}
+		{D37CF4C5-6224-BCE3-3FF1-AAA922A3EBCC} = {D37CF4C5-6224-BCE3-3FF1-AAA922A3EBCC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Byom.WPF", "Byom.WPF\Byom.WPF.csproj", "{D37CF4C5-6224-BCE3-3FF1-AAA922A3EBCC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3AC11DC8-CE75-2A2A-C982-87B66850E63E} = {3AC11DC8-CE75-2A2A-C982-87B66850E63E}
+		{AEDA67E3-0719-C9A7-840C-535CDDB1D0F8} = {AEDA67E3-0719-C9A7-840C-535CDDB1D0F8}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{754FC069-D67B-A9D7-50A1-8D1CA196D8F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Byom.Abstractions\Byom.Abstractions.csproj" />
+    </ItemGroup>
+
 </Project>

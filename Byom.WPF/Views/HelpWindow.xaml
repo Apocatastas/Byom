@@ -1,0 +1,70 @@
+<Window x:Class="Byom.WPF.Views.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Справка — BYOM"
+        Height="500" Width="700"
+        MinHeight="300" MinWidth="450"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        ResizeMode="CanResize">
+
+  <Grid Margin="16">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <ScrollViewer Grid.Row="0"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+      <StackPanel>
+        <TextBlock Text="BYOM — анализ банковских операций"
+                           FontSize="18" FontWeight="SemiBold"
+                           Margin="0,0,0,12" />
+
+        <TextBlock Text="Что делает приложение"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,4" />
+        <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    Загружает выписку операций в формате CSV (TBank) и показывает
+                    список операций: дату, время, сумму, категорию и контрагента.
+        </TextBlock>
+
+        <TextBlock Text="Формат файла"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,4" />
+        <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    CSV с разделителем «;», кодировка UTF-8. Первая строка — заголовок.
+                    Колонки: Имя счёта, Номер карты, Дата операции, Сумма операции,
+                    Валюта операции, …, Категория по-умолчанию, MCC, Описание,
+                    Сообщение, …, Учёт в аналитике.
+        </TextBlock>
+
+        <TextBlock Text="Горячие клавиши"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,4" />
+        <TextBlock Margin="0,0,0,12">
+                    <Run Text="F1" FontWeight="SemiBold" />
+                    <Run Text=" — открыть эту справку" />
+        </TextBlock>
+
+        <TextBlock Text="Версия"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,4" />
+        <TextBlock Text="0.1.0 (в разработке)" />
+      </StackPanel>
+    </ScrollViewer>
+
+    <Button Grid.Row="1"
+                Content="Закрыть"
+                HorizontalAlignment="Right"
+                Padding="16,6"
+                Margin="0,12,0,0"
+                MinWidth="100"
+                IsCancel="True"
+                Click="CloseButton_Click" />
+  </Grid>
+</Window>
