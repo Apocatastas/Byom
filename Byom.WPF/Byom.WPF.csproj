@@ -8,4 +8,14 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="Serilog.Sinks.File.LatestFile" Version="1.0.0" />
+    <ProjectReference Include="..\Byom.Abstractions\Byom.Abstractions.csproj" />
+    <ProjectReference Include="..\Byom.Core\Byom.Core.csproj" />
+  </ItemGroup>
+
 </Project>
