@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Byom.Abstractions.Interfaces;
 using Byom.Abstractions.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -12,11 +13,16 @@ public partial class MainViewModel : ObservableObject
     private readonly ITransactionParser _parser;
     private readonly IFileDialogService _fileDialog;
     private readonly IByomHelpService _help;
+    private readonly ILogger _logger;
+
+    private CancellationTokenSource? _cts;
 
     [ObservableProperty]
     private string? _selectedFilePath;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(LoadCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CancelCommand))]
     private bool _isBusy;
 
     [ObservableProperty]
@@ -27,42 +33,96 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(
         ITransactionParser parser,
         IFileDialogService fileDialog,
-        IByomHelpService help)
+        IByomHelpService help,
+        ILogger logger)
     {
         _parser = parser;
         _fileDialog = fileDialog;
         _help = help;
+        _logger = logger;
+
+        StatusMessage = "Готов к работе";
     }
 
     [RelayCommand]
     private void PickFile()
     {
-        // TODO: реализуем в задаче про VM
         var path = _fileDialog.PickOpenCsvFile();
-        if (path is not null)
+        if (path is null)
         {
-            SelectedFilePath = path;
+            return;
         }
+
+        SelectedFilePath = path;
+        _logger.Information("Выбран файл: {Path}", path);
     }
 
     [RelayCommand(CanExecute = nameof(CanLoad))]
     private async Task LoadAsync()
     {
-        // TODO: настоящая загрузка в задаче про парсер
-        await Task.CompletedTask;
+        if (string.IsNullOrWhiteSpace(SelectedFilePath))
+        {
+            return;
+        }
+
+        _cts = new CancellationTokenSource();
+        IsBusy = true;
+        StatusMessage = "Загрузка...";
+        Transactions.Clear();
+
+        var sw = Stopwatch.StartNew();
+        _logger.Information("Начало загрузки: {Path}", SelectedFilePath);
+
+        try
+        {
+            var result = await _parser.ParseAsync(SelectedFilePath, _cts.Token);
+
+            foreach (var tx in result.Transactions)
+            {
+                Transactions.Add(tx);
+            }
+
+            sw.Stop();
+            StatusMessage = $"Загружено: {result.ParsedRows} из {result.TotalRows}, " +
+                            $"пропущено: {result.SkippedRows}, " +
+                            $"за {sw.ElapsedMilliseconds} мс";
+
+            _logger.Information(
+                "Загрузка завершена. Всего: {Total}, загружено: {Parsed}, пропущено: {Skipped}, {Ms} мс",
+                result.TotalRows, result.ParsedRows, result.SkippedRows, sw.ElapsedMilliseconds);
+        }
+        catch (OperationCanceledException)
+        {
+            StatusMessage = "Загрузка отменена";
+            _logger.Information("Загрузка отменена пользователем");
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Ошибка: {ex.Message}";
+            _logger.Error(ex, "Ошибка при загрузке файла");
+        }
+        finally
+        {
+            IsBusy = false;
+            _cts?.Dispose();
+            _cts = null;
+        }
     }
 
     private bool CanLoad() => !IsBusy && !string.IsNullOrWhiteSpace(SelectedFilePath);
+
+    [RelayCommand(CanExecute = nameof(CanCancel))]
+    private void Cancel()
+    {
+        _cts?.Cancel();
+    }
+
+    private bool CanCancel() => IsBusy;
 
     [RelayCommand]
     private void ShowHelp()
     {
         _help.ShowHelp();
-    }
-
-    partial void OnIsBusyChanged(bool value)
-    {
-        LoadCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnSelectedFilePathChanged(string? value)

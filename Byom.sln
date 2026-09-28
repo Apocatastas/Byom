@@ -10,6 +10,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{06C39A36-74F9-4E44-9AB4-FACE5265696D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3EF09E3C-AA2C-4470-98F3-9564A195F260}"
+	ProjectSection(SolutionItems) = preProject
+		Operations Tue Sep 01 2026-Mon Sep 28 2026.csv = Operations Tue Sep 01 2026-Mon Sep 28 2026.csv
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Byom.Abstractions", "Byom.Abstractions\Byom.Abstractions.csproj", "{3AC11DC8-CE75-2A2A-C982-87B66850E63E}"
 EndProject

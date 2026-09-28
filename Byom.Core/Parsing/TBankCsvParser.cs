@@ -13,6 +13,7 @@ public sealed class TBankCsvParser : ITransactionParser
             TotalRows: 0,
             SkippedRows: 0);
 
-        return Task.FromResult(ImportResult.Empty);
+
+          return Task.FromResult(ImportResult.Empty);
     }
 }
