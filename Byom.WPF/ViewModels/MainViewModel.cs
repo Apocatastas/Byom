@@ -10,6 +10,7 @@ using Serilog;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 
 namespace Byom.WPF.ViewModels;
@@ -43,6 +44,15 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private string _topCategorySummaryText = "";
+
+    [ObservableProperty]
+    private ISeries[] _monthlySeries = Array.Empty<ISeries>();
+
+    [ObservableProperty]
+    private Axis[] _monthlyXAxes = Array.Empty<Axis>();
+
+    [ObservableProperty]
+    private Axis[] _monthlyYAxes = Array.Empty<Axis>();
 
     public ObservableCollection<Transaction> Transactions { get; } = new();
 
@@ -87,6 +97,10 @@ public partial class MainViewModel : ObservableObject
         StatusMessage = "Загрузка...";
         Summary = PeriodSummary.Empty;
         CategorySeries = Array.Empty<ISeries>();
+        CategorySeries = Array.Empty<ISeries>();
+        MonthlySeries = Array.Empty<ISeries>();
+        MonthlyXAxes = Array.Empty<Axis>();
+        MonthlyYAxes = Array.Empty<Axis>();
         Transactions.Clear();
 
         var sw = Stopwatch.StartNew();
@@ -103,6 +117,8 @@ public partial class MainViewModel : ObservableObject
 
             Summary = _summaryCalculator.Calculate(result.Transactions);
             UpdateCategorySeries(Summary.Categories);
+            UpdateCategorySeries(Summary.Categories);
+            UpdateMonthlySeries(Summary.Months);
 
             sw.Stop();
             StatusMessage = $"Загружено: {result.ParsedRows} из {result.TotalRows}, " +
@@ -193,6 +209,100 @@ public partial class MainViewModel : ObservableObject
             ToolTipLabelFormatter = point =>
                 $"{point.Coordinate.PrimaryValue:N2} ₽",
             Pushout = 0,
+        };
+    }
+
+    private static readonly SKColor IncomeColor = new(0x27, 0xAE, 0x60);
+    private static readonly SKColor ExpenseColor = new(0xC0, 0x39, 0x2B);
+    private static readonly SKColor NetColor = new(0x2C, 0x3E, 0x50);
+
+    private void UpdateMonthlySeries(IReadOnlyList<MonthlySummary> months)
+    {
+        if (months.Count == 0)
+        {
+            MonthlySeries = Array.Empty<ISeries>();
+            MonthlyXAxes = Array.Empty<Axis>();
+            MonthlyYAxes = Array.Empty<Axis>();
+            return;
+        }
+
+        MonthlySeries = new ISeries[]
+        {
+        new ColumnSeries<decimal>
+        {
+            Name = "Доход",
+            Values = months.Select(m => m.Income).ToArray(),
+            Fill = new SolidColorPaint(IncomeColor),
+            Stroke = null,
+            MaxBarWidth = 28,
+            DataLabelsPaint = new SolidColorPaint(SKColors.Black),
+            DataLabelsSize = 10,
+            DataLabelsPosition = LiveChartsCore.Measure.DataLabelsPosition.Top,
+            DataLabelsFormatter = point =>
+                point.Coordinate.PrimaryValue > 0
+                    ? $"{point.Coordinate.PrimaryValue:N0}"
+                    : "",
+        },
+        new ColumnSeries<decimal>
+        {
+            Name = "Расход",
+            Values = months.Select(m => m.Expense).ToArray(),
+            Fill = new SolidColorPaint(ExpenseColor),
+            Stroke = null,
+            MaxBarWidth = 28,
+            DataLabelsPaint = new SolidColorPaint(SKColors.Black),
+            DataLabelsSize = 10,
+            DataLabelsPosition = LiveChartsCore.Measure.DataLabelsPosition.Top,
+            DataLabelsFormatter = point =>
+                point.Coordinate.PrimaryValue > 0
+                    ? $"{point.Coordinate.PrimaryValue:N0}"
+                    : "",
+        },
+         new LineSeries<decimal>
+    {
+        Name = "Баланс",
+        Values = months.Select(m => m.Net).ToArray(),
+        Stroke = new SolidColorPaint(NetColor) { StrokeThickness = 2 },
+        Fill = null,
+        GeometryFill = new SolidColorPaint(NetColor),
+        GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
+        GeometrySize = 10,
+        LineSmoothness = 0.3,
+        DataLabelsPaint = new SolidColorPaint(NetColor),
+        DataLabelsSize = 10,
+        DataLabelsPosition = LiveChartsCore.Measure.DataLabelsPosition.Top,
+        DataLabelsFormatter = point =>
+            point.Coordinate.PrimaryValue != 0
+                ? $"{point.Coordinate.PrimaryValue:N0}"
+                : "",
+    },
+        };
+
+        MonthlyXAxes = new Axis[]
+        {
+        new Axis
+        {
+            Labels = months.Select(m => m.DisplayName).ToArray(),
+            LabelsRotation = 0,
+            TextSize = 12,
+            SeparatorsPaint = null,
+            TicksPaint = null,
+        }
+        };
+
+        MonthlyYAxes = new Axis[]
+        {
+        new Axis
+        {
+            Labeler = value => value.ToString("N0") + " ₽",
+            TextSize = 11,
+            SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
+            {
+                StrokeThickness = 1,
+                PathEffect = new DashEffect(new float[] { 4, 4 })
+            },
+            TicksPaint = null,
+        }
         };
     }
 }

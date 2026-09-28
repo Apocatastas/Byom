@@ -254,10 +254,33 @@
       <!-- === TAB 3: Динамика === -->
       <TabItem Header="Динамика">
         <Grid Margin="8">
-          <TextBlock Text="График по месяцам появится в следующей итерации."
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               Foreground="#95A5A6" />
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <TextBlock Grid.Row="0"
+                   Text="Доходы и расходы по месяцам"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,12" />
+
+          <lvc:CartesianChart Grid.Row="1"
+                            Series="{Binding MonthlySeries}"
+                            XAxes="{Binding MonthlyXAxes}"
+                            YAxes="{Binding MonthlyYAxes}"
+                            LegendPosition="Top"
+                            LegendTextSize="13"
+                            TooltipPosition="Top"
+                            ZoomMode="None" />
+
+          <TextBlock Grid.Row="2"
+                   Margin="0,8,0,0"
+                   Foreground="#7F8C8D"
+                   FontSize="11"
+                   TextWrapping="Wrap"
+                   Text="Столбики показывают суммы за каждый месяц. Наведите на столбик для подробностей." />
         </Grid>
       </TabItem>
 
